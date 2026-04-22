@@ -1,0 +1,15 @@
+com/mycompany/chess/server/ServerMain.class
+com/mycompany/chess/client/game$4.class
+com/mycompany/chess/client/game.class
+com/mycompany/chess/client/enter.class
+com/mycompany/chess/client/ClientMain.class
+com/mycompany/chess/server/ClientHandler.class
+com/mycompany/chess/client/game$5.class
+com/mycompany/chess/model/board.class
+com/mycompany/chess/model/pieces.class
+com/mycompany/chess/client/game$1.class
+com/mycompany/chess/client/game$6.class
+com/mycompany/chess/client/Chess.class
+com/mycompany/chess/client/game$2.class
+com/mycompany/chess/client/game$3.class
+com/mycompany/chess/model/move.class
