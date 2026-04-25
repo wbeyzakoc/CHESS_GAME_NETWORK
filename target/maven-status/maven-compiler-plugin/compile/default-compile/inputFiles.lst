@@ -1,9 +1,10 @@
+/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/client/AssetLoader.java
 /Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/client/Chess.java
-/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/client/ClientMain.java
+/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/client/ClientConnection.java
+/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/client/EndScreen.java
+/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/client/GameLogic.java
+/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/client/Piece.java
+/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/client/Server.java
 /Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/client/enter.java
 /Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/client/game.java
-/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/model/board.java
-/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/model/move.java
-/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/model/pieces.java
-/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/server/ClientHandler.java
-/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/server/ServerMain.java
+/Users/beyzamacbook/NetBeansProjects/chess/src/main/java/com/mycompany/chess/client/ready.java

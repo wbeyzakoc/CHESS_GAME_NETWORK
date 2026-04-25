@@ -3,14 +3,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.mycompany.chess.client;
-
+ 
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -18,169 +22,86 @@ import javax.swing.JButton;
  */
 public class game extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(game.class.getName());
-List<JButton> pieceButtons;
-List<JButton> boardButtons;
+    private ClientConnection conn;
+    boolean beyazSirasi = true;
+    JButton[][] board;
+    GameLogic logic = new GameLogic();
+    Map<JButton, Piece> pieceMap = new HashMap<>();
 
-Map<String, String> piecePositions = new HashMap<>();
-String selectedPiece = null;
-JButton selectedButton = null;
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(game.class.getName());
+    JButton secilenTas = null;
+
+    List<JButton> taslar = new ArrayList<>();
+    List<JButton> kareler = new ArrayList<>();
+    List<String> yunanAldigiTaslar = new ArrayList<>();
+    List<String> turkunAldigiTaslar = new ArrayList<>();
+
+    private boolean onlineMode = false;
+    private boolean oyunBitti = false;
+    private String oyuncuRengi = "beyaz";
+    private String serverHost = "127.0.0.1";
+    private int serverPort = 5003;
+
     /**
      * Creates new form game
      */
     public game() {
+        this("127.0.0.1", 5003);
+    }
+
+    public game(String serverHost, int serverPort) {
+        this.serverHost = serverHost;
+        this.serverPort = serverPort;
         initComponents();
 
-        // 🔥 BUTONLARA NAME VER
-        // 🔥 HER BUTONUN VARIABLE ADINI NAME YAP (EN SAĞLAM)
-        att1.setName("att1");
-        att2.setName("att2");
+        try {
+            conn = baglanSunucuya();
+            onlineMode = true;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Server bağlantısı başarısız!\n"
+                    + "Önce Server.java çalışıyor olmalı.\n"
+                    + "Denenen adresler: " + serverHost + ":5003, " + serverHost + ":5002 ve " + serverHost + ":5001");
+        }
 
-        piyont1.setName("piyont1");
-        piyont2.setName("piyont2");
-        piyont3.setName("piyont3");
-        piyont4.setName("piyont4");
-        piyont5.setName("piyont5");
-        piyont6.setName("piyont6");
-        piyont7.setName("piyont7");
-        piyont8.setName("piyont8");
+        yukleGorseller();
 
-        saht.setName("saht");
-        vezirt.setName("vezirt");
-        kalet1.setName("kalet1");
-        kalet2.setName("kalet2");
-        filt1.setName("filt1");
-        filt2.setName("filt2");
+        setupPieces();
 
-        aty1.setName("aty1");
-        aty2.setName("aty2");
-
-        piyony1.setName("piyony1");
-        piyony2.setName("piyony2");
-        piyony3.setName("piyony3");
-        piyony4.setName("piyony4");
-        piyony5.setName("piyony5");
-        piyony6.setName("piyony6");
-        piyony7.setName("piyony7");
-        piyony8.setName("piyony8");
-
-        sahy.setName("sahy");
-        veziry.setName("veziry");
-        kaley1.setName("kaley1");
-        kaley2.setName("kaley2");
-        fily1.setName("fily1");
-        fily2.setName("fily2");
-
-        // 🔥 TAHTA NAME (BU ŞART)
-        A1.setName("A1");
-        A2.setName("A2");
-        A3.setName("A3");
-        A4.setName("A4");
-        A5.setName("A5");
-        A6.setName("A6");
-        A7.setName("A7");
-        A8.setName("A8");
-
-        B1.setName("B1");
-        B2.setName("B2");
-        B3.setName("B3");
-        B4.setName("B4");
-        B5.setName("B5");
-        B6.setName("B6");
-        B7.setName("B7");
-        B8.setName("B8");
-
-        C1.setName("C1");
-        C2.setName("C2");
-        C3.setName("C3");
-        C4.setName("C4");
-        C5.setName("C5");
-        C6.setName("C6");
-        C7.setName("C7");
-        C8.setName("C8");
-
-        D1.setName("D1");
-        D2.setName("D2");
-        D3.setName("D3");
-        D4.setName("D4");
-        D5.setName("D5");
-        D6.setName("D6");
-        D7.setName("D7");
-        D8.setName("D8");
-
-        E1.setName("E1");
-        E2.setName("E2");
-        E3.setName("E3");
-        E4.setName("E4");
-        E5.setName("E5");
-        E6.setName("E6");
-        E7.setName("E7");
-        E8.setName("E8");
-
-        F1.setName("F1");
-        F2.setName("F2");
-        F3.setName("F3");
-        F4.setName("F4");
-        F5.setName("F5");
-        F6.setName("F6");
-        F7.setName("F7");
-        F8.setName("F8");
-
-        G1.setName("G1");
-        G2.setName("G2");
-        G3.setName("G3");
-        G4.setName("G4");
-        G5.setName("G5");
-        G6.setName("G6");
-        G7.setName("G7");
-        G8.setName("G8");
-
-        H1.setName("H1");
-        H2.setName("H2");
-        H3.setName("H3");
-        H4.setName("H4");
-        H5.setName("H5");
-        H6.setName("H6");
-        H7.setName("H7");
-        H8.setName("H8");
-
-        // 🔥 KONUM MAP
-        piecePositions.put("att1", "B1");
-        piecePositions.put("att2", "G1");
-        piecePositions.put("piyont1", "A2");
-        piecePositions.put("piyont2", "B2");
-        // 🎯 LİSTELER (BURASI KRİTİK)
-        pieceButtons = Arrays.asList(
-                att1, att2, piyont1, piyont2, piyont3, piyont4,
-                piyont5, piyont6, piyont7, piyont8,
-                saht, vezirt, kalet1, kalet2, filt1, filt2,
-                aty1, aty2, piyony1, piyony2, piyony3, piyony4,
-                piyony5, piyony6, piyony7, piyony8,
-                sahy, veziry, kaley1, kaley2, fily1, fily2
+        taslar = Arrays.asList(att1, att2, piyont1, piyont2, piyont3, piyont4, piyont5, piyont6, piyont7, piyont8, saht, vezirt, kalet1, kalet2, filt1, filt2,
+                aty1, aty2, piyony1, piyony2, piyony3, piyony4, piyony5, piyony6, piyony7, piyony8, sahy, veziry, kaley1, kaley2, fily1, fily2
         );
 
-        boardButtons = Arrays.asList(
-                A1, A2, A3, A4, A5, A6, A7, A8,
+        board = new JButton[][]{
+            {A1, A2, A3, A4, A5, A6, A7, A8},
+            {B1, B2, B3, B4, B5, B6, B7, B8},
+            {C1, C2, C3, C4, C5, C6, C7, C8},
+            {D1, D2, D3, D4, D5, D6, D7, D8},
+            {E1, E2, E3, E4, E5, E6, E7, E8},
+            {F1, F2, F3, F4, F5, F6, F7, F8},
+            {G1, G2, G3, G4, G5, G6, G7, G8},
+            {H1, H2, H3, H4, H5, H6, H7, H8}
+        };
+
+        kareler = Arrays.asList(A1, A2, A3, A4, A5, A6, A7, A8,
                 B1, B2, B3, B4, B5, B6, B7, B8,
                 C1, C2, C3, C4, C5, C6, C7, C8,
                 D1, D2, D3, D4, D5, D6, D7, D8,
                 E1, E2, E3, E4, E5, E6, E7, E8,
                 F1, F2, F3, F4, F5, F6, F7, F8,
                 G1, G2, G3, G4, G5, G6, G7, G8,
-                H1, H2, H3, H4, H5, H6, H7, H8
-        );
+                H1, H2, H3, H4, H5, H6, H7, H8);
 
-        // 🔥 METHODLARI ÇAĞIR
-        secimMethodu(pieceButtons, boardButtons);
-        hedefSec(boardButtons);
-        
-        
-        
-        
-        
-        
-        
-        
+        yunanınAldıkları.setBounds(130, 70, 220, 40);
+        turkunAldıkları.setBounds(130, 130, 220, 40);
+        guncelleAlinanTasLabellari();
+        baslangicDurumu();
+        tasSecim();
+        kareSecim();
+        if (onlineMode && conn != null) {
+            dinlemeyiBaslat();
+        }
+
         for (Component c : jPanel1.getComponents()) {
             if (c instanceof JButton) {
                 JButton btn = (JButton) c;
@@ -196,11 +117,41 @@ JButton selectedButton = null;
                 btn.setContentAreaFilled(false);
                 btn.setBorderPainted(false);
             }
-        
+
         }
-        
-        
-        
+
+    }
+
+    private ClientConnection baglanSunucuya() throws Exception {
+        int[] ports = {serverPort, 5002, 5001};
+        Exception lastError = null;
+
+        for (int port : ports) {
+            try {
+                serverPort = port;
+                return new ClientConnection(serverHost, port);
+            } catch (Exception e) {
+                lastError = e;
+            }
+        }
+
+        throw lastError;
+    }
+
+    private void dinlemeyiBaslat() {
+        new Thread(() -> {
+            try {
+                while (true) {
+                    String msg = conn.receive();
+                    if (msg == null) {
+                        break;
+                    }
+                    handleIncomingMove(msg);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, "chess-client-listener").start();
     }
 
     /**
@@ -310,9 +261,19 @@ JButton selectedButton = null;
         H7 = new javax.swing.JButton();
         H8 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        score = new javax.swing.JLabel();
+        turn = new javax.swing.JLabel();
+        yunanınAldıkları = new javax.swing.JLabel();
+        TURK = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        turkunAldıkları = new javax.swing.JLabel();
+        yunan = new javax.swing.JLabel();
+        turk = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setBackground(new java.awt.Color(153, 102, 0));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         att1.setIcon(new javax.swing.ImageIcon("/Users/beyzamacbook/NetBeansProjects/chess/img/att-Picsart-BackgroundRemover.png")); // NOI18N
@@ -434,7 +395,6 @@ JButton selectedButton = null;
         jPanel1.add(piyony7, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 670, -1, -1));
 
         piyony8.setIcon(new javax.swing.ImageIcon("/Users/beyzamacbook/NetBeansProjects/chess/img/piyony-Picsart-BackgroundRemover.png")); // NOI18N
-        piyony8.setActionCommand("");
         jPanel1.add(piyony8, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 670, -1, -1));
 
         A8.addActionListener(new java.awt.event.ActionListener() {
@@ -510,20 +470,57 @@ JButton selectedButton = null;
         jLabel1.setIcon(new javax.swing.ImageIcon("/Users/beyzamacbook/NetBeansProjects/chess/img/ChatGPT Image 22 Nis 2026 16_09_23.png")); // NOI18N
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 0, 940, -1));
 
+        jPanel2.setBackground(new java.awt.Color(196, 192, 182));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        score.setFont(new java.awt.Font("Luminari", 3, 36)); // NOI18N
+        score.setText("SCORE");
+        jPanel2.add(score, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 0, -1, -1));
+
+        turn.setFont(new java.awt.Font("Luminari", 2, 48)); // NOI18N
+        turn.setText(".....");
+        jPanel2.add(turn, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 410, 100));
+
+        yunanınAldıkları.setFont(new java.awt.Font("Luminari", 0, 13)); // NOI18N
+        yunanınAldıkları.setText("....");
+        jPanel2.add(yunanınAldıkları, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 70, 370, 40));
+
+        TURK.setFont(new java.awt.Font("Luminari", 2, 18)); // NOI18N
+        TURK.setText("TURK");
+        jPanel2.add(TURK, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 80, 60, -1));
+
+        jLabel4.setFont(new java.awt.Font("Luminari", 2, 18)); // NOI18N
+        jLabel4.setText("GREEN");
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 130, -1, -1));
+
+        turkunAldıkları.setFont(new java.awt.Font("Luminari", 0, 13)); // NOI18N
+        turkunAldıkları.setText("....");
+        jPanel2.add(turkunAldıkları, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 120, 380, 30));
+
+        yunan.setIcon(new javax.swing.ImageIcon("/Users/beyzamacbook/NetBeansProjects/chess/img/yunan.png")); // NOI18N
+        jPanel2.add(yunan, new org.netbeans.lib.awtextra.AbsoluteConstraints(-90, 260, 540, 730));
+
+        turk.setIcon(new javax.swing.ImageIcon("/Users/beyzamacbook/NetBeansProjects/chess/img/turk.png")); // NOI18N
+        jPanel2.add(turk, new org.netbeans.lib.awtextra.AbsoluteConstraints(-60, 260, 510, -1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 964, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 986, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -644,6 +641,7 @@ JButton selectedButton = null;
     private javax.swing.JButton H6;
     private javax.swing.JButton H7;
     private javax.swing.JButton H8;
+    private javax.swing.JLabel TURK;
     private javax.swing.JButton att1;
     private javax.swing.JButton att2;
     private javax.swing.JButton aty1;
@@ -653,7 +651,9 @@ JButton selectedButton = null;
     private javax.swing.JButton fily1;
     private javax.swing.JButton fily2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JButton kalet1;
     private javax.swing.JButton kalet2;
     private javax.swing.JButton kaley1;
@@ -676,90 +676,515 @@ JButton selectedButton = null;
     private javax.swing.JButton piyony8;
     private javax.swing.JButton saht;
     private javax.swing.JButton sahy;
+    private javax.swing.JLabel score;
+    private javax.swing.JLabel turk;
+    private javax.swing.JLabel turkunAldıkları;
+    private javax.swing.JLabel turn;
     private javax.swing.JButton vezirt;
     private javax.swing.JButton veziry;
+    private javax.swing.JLabel yunan;
+    private javax.swing.JLabel yunanınAldıkları;
     // End of variables declaration//GEN-END:variables
 
-    public void secimMethodu(List<JButton> pieceButtons, List<JButton> boardButtons) {
+    public void konumlariKaydetVeYazdir() {
 
-        // 🎯 BAŞTA
-        for (JButton b : boardButtons) {
-            b.setEnabled(false);
+        Map<String, Point> konumlar = new HashMap<>();
+
+        JButton[][] board = {
+            {A1, A2, A3, A4, A5, A6, A7, A8},
+            {B1, B2, B3, B4, B5, B6, B7, B8},
+            {C1, C2, C3, C4, C5, C6, C7, C8},
+            {D1, D2, D3, D4, D5, D6, D7, D8},
+            {E1, E2, E3, E4, E5, E6, E7, E8},
+            {F1, F2, F3, F4, F5, F6, F7, F8},
+            {G1, G2, G3, G4, G5, G6, G7, G8},
+            {H1, H2, H3, H4, H5, H6, H7, H8}
+        };
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                String key = "" + (char) ('A' + i) + (j + 1);
+                Point p = board[i][j].getLocation();
+                konumlar.put(key, p);
+                System.out.println(key + " -> X:" + p.x + " Y:" + p.y);
+            }
         }
-        for (JButton b : pieceButtons) {
-            b.setEnabled(true);
+    }
+
+    public void baslangicDurumu() {
+        guncelleSiraLabeli();
+        if (oyunBitti) {
+            for (JButton t : taslar) {
+                t.setEnabled(false);
+            }
+            for (JButton k : kareler) {
+                k.setEnabled(false);
+            }
+            return;
         }
+        for (JButton t : taslar) {
+            t.setEnabled(true);
+        }
+        for (JButton k : kareler) {
+            k.setEnabled(false);
+        }
+    }
 
-        // 🎯 TAŞ SEÇME
-        for (JButton btn : pieceButtons) {
+    public void tasSecim() {
 
-            btn.addActionListener(e -> {
+        for (JButton tas : taslar) {
 
-                selectedPiece = btn.getName(); // att1 vs
-
-                System.out.println("Seçilen taş: " + selectedPiece);
-
-                // 🔥 TAŞLARI KAPAT
-                for (JButton b : pieceButtons) {
-                    b.setEnabled(false);
+            tas.addActionListener(e -> {
+                if (oyunBitti) {
+                    return;
                 }
 
-                // 🔥 TAHTAYI AÇ
-                for (JButton b : boardButtons) {
-                    b.setEnabled(true);
+                JButton tiklanan = (JButton) e.getSource();
+                Piece p = pieceMap.get(tiklanan);
+
+                if (p == null) {
+                    return;
+                }
+
+                if (onlineMode && !isMyTurn()) {
+                    JOptionPane.showMessageDialog(this, "Şu an sıra sende değil.");
+                    return;
+                }
+
+                if (secilenTas != null) {
+                    Piece seciliParca = pieceMap.get(secilenTas);
+
+                    if (seciliParca == null) {
+                        secilenTas = null;
+                        baslangicDurumu();
+                        return;
+                    }
+
+                    if (tiklanan == secilenTas) {
+                        return;
+                    }
+
+                    if (seciliParca.color.equals(p.color)) {
+                        secilenTas = tiklanan;
+                        System.out.println("Seçilen taş değişti: " + p.type + " " + p.color);
+                        return;
+                    }
+
+                    hamleYap(p.x, p.y);
+                    return;
+                }
+
+                if (beyazSirasi && !p.color.equals("beyaz")) {
+                    System.out.println("Sıra beyazda!");
+                    return;
+                }
+
+                if (!beyazSirasi && !p.color.equals("siyah")) {
+                    System.out.println("Sıra siyahta!");
+                    return;
+                }
+
+                if (onlineMode && !p.color.equals(oyuncuRengi)) {
+                    JOptionPane.showMessageDialog(this, "Sadece kendi taşlarını oynatabilirsin.");
+                    return;
+                }
+
+                secilenTas = tiklanan;
+                System.out.println("Seçilen taş: " + p.type + " " + p.color);
+
+                for (JButton k : kareler) {
+                    k.setEnabled(true);
                 }
             });
         }
     }
 
-    public void hedefSec(List<JButton> boardButtons) {
+    public void kareSecim() {
 
-        for (JButton btn : boardButtons) {
+        for (JButton kare : kareler) {
 
-            btn.addActionListener(e -> {
-
-                if (selectedPiece == null) {
+            kare.addActionListener(e -> {
+                if (oyunBitti) {
                     return;
                 }
 
-                String target = btn.getName(); // A3 vs
-
-                System.out.println("Hedef: " + target);
-
-                // 🔥 TAŞIN KONUMUNU GÜNCELLE
-                piecePositions.put(selectedPiece, target);
-                // 🔥 TAŞI BUL
-                JButton sourceButton = null;
-
-                for (JButton b : pieceButtons) {
-                    if (b.getName().equals(selectedPiece)) {
-                        sourceButton = b;
-                        break;
-                    }
+                if (secilenTas == null) {
+                    JOptionPane.showMessageDialog(this, "Önce taş seç!");
+                    return;
                 }
 
-// 🔥 HEDEF BUTONU BUL
-                JButton targetButton = null;
+                JButton tiklananKare = (JButton) e.getSource();
+                Point hedef = getIndex(tiklananKare);
 
-                for (JButton b : boardButtons) {
-                    if (b.getName().equals(target)) {
-                        targetButton = b;
-                        break;
-                    }
+                if (hedef == null) {
+                    return;
                 }
 
-// 🔥 İKON TAŞIMA
-                if (sourceButton != null && targetButton != null) {
-
-                    targetButton.setIcon(sourceButton.getIcon()); // yeni yere koy
-                    sourceButton.setIcon(null);                   // eskiyi temizle
-                }
-
-                System.out.println("Yeni konum: " + piecePositions.get(selectedPiece));
-
-                // RESET
-                selectedPiece = null;
+                hamleYap(hedef.x, hedef.y);
             });
+        }
+    }
+
+    private void hamleYap(int hedefX, int hedefY) {
+        if (secilenTas == null) {
+            return;
+        }
+
+        Piece tasObj = pieceMap.get(secilenTas);
+        if (tasObj == null) {
+            secilenTas = null;
+            baslangicDurumu();
+            return;
+        }
+
+        Point kaynak = new Point(tasObj.x, tasObj.y);
+        JButton hedefKare = board[hedefX][hedefY];
+
+        if (hedefKare == null) {
+            secilenTas = null;
+            baslangicDurumu();
+            return;
+        }
+
+        boolean gecerliHamle = uygulaHamleyiTahtada(secilenTas, hedefX, hedefY, true);
+        if (gecerliHamle && onlineMode && conn != null) {
+            String msg = "MOVE," + kaynak.x + "," + kaynak.y + "," + hedefX + "," + hedefY;
+            conn.send(msg);
+        }
+        secilenTas = null;
+        baslangicDurumu();
+
+    }
+
+    private boolean uygulaHamleyiTahtada(JButton kaynakTas, int hedefX, int hedefY, boolean showErrors) {
+        Piece tasObj = pieceMap.get(kaynakTas);
+        JButton hedefKare = board[hedefX][hedefY];
+
+        if (tasObj == null || hedefKare == null) {
+            return false;
+        }
+
+        Piece hedefTas = logic.board[hedefX][hedefY];
+        int kaynakX = tasObj.x;
+        int kaynakY = tasObj.y;
+        boolean rokHamlesi = "sah".equals(tasObj.type) && Math.abs(hedefX - kaynakX) == 2;
+        int kaleEskiX = hedefX > kaynakX ? 7 : 0;
+        int kaleYeniX = hedefX > kaynakX ? hedefX - 1 : hedefX + 1;
+        JButton rokKalesi = rokHamlesi ? findButtonByCoords(kaleEskiX, kaynakY) : null;
+
+        if (hedefTas != null && hedefTas.color.equals(tasObj.color)) {
+            if (showErrors) {
+                JOptionPane.showMessageDialog(this, "Kendi taşını yiyemezsin!");
+            }
+            return false;
+        }
+
+        if (!logic.move(tasObj, hedefX, hedefY)) {
+            if (showErrors) {
+                JOptionPane.showMessageDialog(this, "Geçersiz hamle!");
+            }
+            return false;
+        }
+
+        if (hedefTas != null) {
+            JButton sil = findButtonByPiece(hedefTas);
+            if (sil != null) {
+                sil.setVisible(false);
+                pieceMap.remove(sil);
+            }
+            alinanTasiKaydet(tasObj, hedefTas);
+        }
+
+        tasiKaliciTasi(kaynakTas, hedefKare);
+        if (rokHamlesi && rokKalesi != null) {
+            tasiKaliciTasi(rokKalesi, board[kaleYeniX][kaynakY]);
+            jPanel1.setComponentZOrder(rokKalesi, 0);
+        }
+        guncelleTerfiGorseli(kaynakTas, tasObj);
+        jPanel1.setComponentZOrder(kaynakTas, 0);
+        jPanel1.revalidate();
+        jPanel1.repaint();
+        beyazSirasi = !beyazSirasi;
+        guncelleSiraLabeli();
+        oyununBitisDurumunuKontrolEt(tasObj.color);
+        return true;
+    }
+
+    private void oyununBitisDurumunuKontrolEt(String hamleYapanRenk) {
+        String siradakiRenk = GameLogic.opposite(hamleYapanRenk);
+        boolean sah = logic.isKingInCheck(siradakiRenk);
+        boolean hamleVar = logic.hasAnyLegalMove(siradakiRenk);
+
+        if (sah && !hamleVar) {
+            oyunuBitir(takimAdi(hamleYapanRenk) + " kazandı. Şah mat!");
+        } else if (!sah && !hamleVar) {
+            oyunuBitir("Pat! Oyun berabere.");
+        } else if (sah) {
+            JOptionPane.showMessageDialog(this, takimAdi(siradakiRenk) + " şah altında!");
+        }
+    }
+
+    private void oyunuBitir(String sonuc) {
+        oyunBitti = true;
+        turn.setText("GAME OVER");
+        SwingUtilities.invokeLater(() -> {
+            new EndScreen(sonuc).setVisible(true);
+            dispose();
+        });
+    }
+
+    private String takimAdi(String renk) {
+        return "beyaz".equals(renk) ? "Türk" : "Yunan";
+    }
+
+    private void guncelleTerfiGorseli(JButton tasButton, Piece tasObj) {
+        if (!"vezir".equals(tasObj.type) || !piyonButonuMu(tasButton)) {
+            return;
+        }
+
+        tasButton.setIcon(AssetLoader.icon("beyaz".equals(tasObj.color)
+                ? "vezirt-fotor-bg-remover-2026042220499.png"
+                : "veziry.png"));
+    }
+
+    private boolean piyonButonuMu(JButton button) {
+        return button == piyont1 || button == piyont2 || button == piyont3 || button == piyont4
+                || button == piyont5 || button == piyont6 || button == piyont7 || button == piyont8
+                || button == piyony1 || button == piyony2 || button == piyony3 || button == piyony4
+                || button == piyony5 || button == piyony6 || button == piyony7 || button == piyony8;
+    }
+
+    private JButton findButtonByPiece(Piece piece) {
+        for (Map.Entry<JButton, Piece> entry : pieceMap.entrySet()) {
+            if (entry.getValue() == piece) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    private JButton findButtonByCoords(int x, int y) {
+        for (Map.Entry<JButton, Piece> entry : pieceMap.entrySet()) {
+            Piece piece = entry.getValue();
+            if (piece.x == x && piece.y == y) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    private void tasiKaliciTasi(JButton tas, JButton hedefKare) {
+        int width = tas.getWidth();
+        int height = tas.getHeight();
+
+        tas.setBounds(hedefKare.getX(), hedefKare.getY(), width, height);
+        jPanel1.add(tas, new org.netbeans.lib.awtextra.AbsoluteConstraints(
+                hedefKare.getX(), hedefKare.getY(), width, height));
+    }
+
+    public void setupPieces() {
+
+        pieceMap.clear();
+        logic = new GameLogic();
+        yunanAldigiTaslar.clear();
+        turkunAldigiTaslar.clear();
+        guncelleAlinanTasLabellari();
+
+        pieceMap.put(piyont1, new Piece("piyon", "beyaz", 0, 6));
+        pieceMap.put(piyont2, new Piece("piyon", "beyaz", 1, 6));
+        pieceMap.put(piyont3, new Piece("piyon", "beyaz", 2, 6));
+        pieceMap.put(piyont4, new Piece("piyon", "beyaz", 3, 6));
+        pieceMap.put(piyont5, new Piece("piyon", "beyaz", 4, 6));
+        pieceMap.put(piyont6, new Piece("piyon", "beyaz", 5, 6));
+        pieceMap.put(piyont7, new Piece("piyon", "beyaz", 6, 6));
+        pieceMap.put(piyont8, new Piece("piyon", "beyaz", 7, 6));
+
+        pieceMap.put(piyony1, new Piece("piyon", "siyah", 0, 1));
+        pieceMap.put(piyony2, new Piece("piyon", "siyah", 1, 1));
+        pieceMap.put(piyony3, new Piece("piyon", "siyah", 2, 1));
+        pieceMap.put(piyony4, new Piece("piyon", "siyah", 3, 1));
+        pieceMap.put(piyony5, new Piece("piyon", "siyah", 4, 1));
+        pieceMap.put(piyony6, new Piece("piyon", "siyah", 5, 1));
+        pieceMap.put(piyony7, new Piece("piyon", "siyah", 6, 1));
+        pieceMap.put(piyony8, new Piece("piyon", "siyah", 7, 1));
+
+        pieceMap.put(kalet1, new Piece("kale", "beyaz", 0, 7));
+        pieceMap.put(kalet2, new Piece("kale", "beyaz", 7, 7));
+        pieceMap.put(kaley1, new Piece("kale", "siyah", 0, 0));
+        pieceMap.put(kaley2, new Piece("kale", "siyah", 7, 0));
+
+        pieceMap.put(att1, new Piece("at", "beyaz", 1, 7));
+        pieceMap.put(att2, new Piece("at", "beyaz", 6, 7));
+        pieceMap.put(aty1, new Piece("at", "siyah", 1, 0));
+        pieceMap.put(aty2, new Piece("at", "siyah", 6, 0));
+
+        pieceMap.put(filt1, new Piece("fil", "beyaz", 2, 7));
+        pieceMap.put(filt2, new Piece("fil", "beyaz", 5, 7));
+        pieceMap.put(fily1, new Piece("fil", "siyah", 2, 0));
+        pieceMap.put(fily2, new Piece("fil", "siyah", 5, 0));
+
+        pieceMap.put(vezirt, new Piece("vezir", "beyaz", 3, 7));
+        pieceMap.put(veziry, new Piece("vezir", "siyah", 3, 0));
+
+        pieceMap.put(saht, new Piece("sah", "beyaz", 4, 7));
+        pieceMap.put(sahy, new Piece("sah", "siyah", 4, 0));
+
+        for (Piece p : pieceMap.values()) {
+            logic.board[p.x][p.y] = p;
+        }
+    }
+
+    Point getIndex(JButton btn) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] == btn) {
+                    return new Point(i, j);
+                }
+            }
+        }
+        return null;
+    }
+
+    private void guncelleSiraLabeli() {
+        if (beyazSirasi) {
+            yunan.setVisible(false);
+            turk.setVisible(true);
+            turn.setText("TURK'S TURN");
+        } else {
+            yunan.setVisible(true);
+            turk.setVisible(false);
+            turn.setText("GREEK'S TURN");
+
+        }
+    }
+
+    private void alinanTasiKaydet(Piece alanTas, Piece yenilenTas) {
+        String tasAdi = tasAdi(yenilenTas);
+
+        if (alanTas.color.equals("beyaz")) {
+            yunanAldigiTaslar.add(tasAdi);
+        } else {
+            turkunAldigiTaslar.add(tasAdi);
+        }
+
+        guncelleAlinanTasLabellari();
+    }
+
+    private void guncelleAlinanTasLabellari() {
+        yunanınAldıkları.setText(yunanAldigiTaslar.isEmpty() ? "-" : String.join(", ", yunanAldigiTaslar));
+        turkunAldıkları.setText(turkunAldigiTaslar.isEmpty() ? "-" : String.join(", ", turkunAldigiTaslar));
+    }
+
+    private String tasAdi(Piece tas) {
+        if (tas == null) {
+            return "";
+        }
+
+        switch (tas.type) {
+            case "piyon":
+                return "Piyon";
+            case "kale":
+                return "Kale";
+            case "at":
+                return "At";
+            case "fil":
+                return "Fil";
+            case "vezir":
+                return "Vezir";
+            case "sah":
+                return "Sah";
+            default:
+                return tas.type;
+        }
+    }
+
+    private boolean isMyTurn() {
+        return (beyazSirasi && "beyaz".equals(oyuncuRengi))
+                || (!beyazSirasi && "siyah".equals(oyuncuRengi));
+    }
+
+    private void yukleGorseller() {
+        att1.setIcon(AssetLoader.icon("att-Picsart-BackgroundRemover.png"));
+        att2.setIcon(AssetLoader.icon("att-Picsart-BackgroundRemover.png"));
+        kalet1.setIcon(AssetLoader.icon("kalet-Picsart-BackgroundRemover.png"));
+        kalet2.setIcon(AssetLoader.icon("kalet-Picsart-BackgroundRemover.png"));
+        vezirt.setIcon(AssetLoader.icon("vezirt-fotor-bg-remover-2026042220499.png"));
+        saht.setIcon(AssetLoader.icon("saht-fotor-bg-remover-2026042220454.png"));
+        filt1.setIcon(AssetLoader.icon("filt-Picsart-BackgroundRemover.png"));
+        filt2.setIcon(AssetLoader.icon("filt-Picsart-BackgroundRemover.png"));
+        piyont1.setIcon(AssetLoader.icon("piyont-Picsart-BackgroundRemover.png"));
+        piyont2.setIcon(AssetLoader.icon("piyont-Picsart-BackgroundRemover.png"));
+        piyont3.setIcon(AssetLoader.icon("piyont-Picsart-BackgroundRemover.png"));
+        piyont4.setIcon(AssetLoader.icon("piyont-Picsart-BackgroundRemover.png"));
+        piyont5.setIcon(AssetLoader.icon("piyont-Picsart-BackgroundRemover.png"));
+        piyont6.setIcon(AssetLoader.icon("piyont-Picsart-BackgroundRemover.png"));
+        piyont7.setIcon(AssetLoader.icon("piyont-Picsart-BackgroundRemover.png"));
+        piyont8.setIcon(AssetLoader.icon("piyont-Picsart-BackgroundRemover.png"));
+        kaley1.setIcon(AssetLoader.icon("kaley-Picsart-BackgroundRemover.png"));
+        kaley2.setIcon(AssetLoader.icon("kaley-Picsart-BackgroundRemover.png"));
+        aty1.setIcon(AssetLoader.icon("aty-Picsart-BackgroundRemover.png"));
+        aty2.setIcon(AssetLoader.icon("aty-Picsart-BackgroundRemover.png"));
+        fily1.setIcon(AssetLoader.icon("fily-Picsart-BackgroundRemover.png"));
+        fily2.setIcon(AssetLoader.icon("fily-Picsart-BackgroundRemover.png"));
+        veziry.setIcon(AssetLoader.icon("veziry.png"));
+        sahy.setIcon(AssetLoader.icon("sahy-fotor-bg-remover-20260422204714.png"));
+        piyony1.setIcon(AssetLoader.icon("piyony-Picsart-BackgroundRemover.png"));
+        piyony2.setIcon(AssetLoader.icon("piyony-Picsart-BackgroundRemover.png"));
+        piyony3.setIcon(AssetLoader.icon("piyony-Picsart-BackgroundRemover.png"));
+        piyony4.setIcon(AssetLoader.icon("piyony-Picsart-BackgroundRemover.png"));
+        piyony5.setIcon(AssetLoader.icon("piyony-Picsart-BackgroundRemover.png"));
+        piyony6.setIcon(AssetLoader.icon("piyony-Picsart-BackgroundRemover.png"));
+        piyony7.setIcon(AssetLoader.icon("piyony-Picsart-BackgroundRemover.png"));
+        piyony8.setIcon(AssetLoader.icon("piyony-Picsart-BackgroundRemover.png"));
+        jLabel1.setIcon(AssetLoader.icon("ChatGPT Image 22 Nis 2026 16_09_23.png"));
+        yunan.setIcon(AssetLoader.icon("yunan.png"));
+        turk.setIcon(AssetLoader.icon("turk.png"));
+    }
+
+    
+    
+    
+    private void handleIncomingMove(String msg) {
+        try {
+            String[] parts = msg.split(",");
+            if (parts.length == 0) {
+                return;
+            }
+
+            if ("COLOR".equals(parts[0]) && parts.length >= 2) {
+                oyuncuRengi = parts[1];
+                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(this,
+                        "Online oyuncu rengin: " + takimAdi(oyuncuRengi)));
+                return;
+            }
+
+            if ("INFO".equals(parts[0]) && parts.length >= 2) {
+                SwingUtilities.invokeLater(() -> turn.setText(parts[1]));
+                return;
+            }
+
+            int offset = "MOVE".equals(parts[0]) ? 1 : 0;
+            if (parts.length < offset + 4) {
+                return;
+            }
+
+            int fromX = Integer.parseInt(parts[offset]);
+            int fromY = Integer.parseInt(parts[offset + 1]);
+            int toX = Integer.parseInt(parts[offset + 2]);
+            int toY = Integer.parseInt(parts[offset + 3]);
+
+            JButton source = findButtonByCoords(fromX, fromY);
+
+            if (source != null) {
+                SwingUtilities.invokeLater(() -> {
+                    uygulaHamleyiTahtada(source, toX, toY, false);
+                    secilenTas = null;
+                    baslangicDurumu();
+                });
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

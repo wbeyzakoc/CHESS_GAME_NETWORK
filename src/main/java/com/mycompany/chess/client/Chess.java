@@ -11,6 +11,6 @@ package com.mycompany.chess.client;
 public class Chess {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        java.awt.EventQueue.invokeLater(() -> new enter().setVisible(true));
     }
 }
