@@ -409,6 +409,11 @@ public class game extends javax.swing.JFrame {
         jPanel1.add(A4, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 500, 80, 70));
         jPanel1.add(A5, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 400, 70, 70));
         jPanel1.add(A6, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 300, 80, 80));
+        A6.addActionListener(e -> {
+            System.out.println(
+                A6.getX() + " , " + A6.getY()
+            );
+        });
         jPanel1.add(A7, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 200, -1, 70));
         jPanel1.add(B1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 790, 80, 90));
         jPanel1.add(B2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 700, 70, 70));

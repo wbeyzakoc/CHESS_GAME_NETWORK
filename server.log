@@ -1,0 +1,2 @@
+Error: Could not find or load main class com.mycompany.chess.client.Server
+Caused by: java.lang.ClassNotFoundException: com.mycompany.chess.client.Server
