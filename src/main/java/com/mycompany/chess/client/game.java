@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -42,6 +43,9 @@ public class game extends javax.swing.JFrame {
     private String serverHost = "127.0.0.1";
     private int serverPort = 5003;
     private String roomCode = "default";
+    private boolean botMode = false;
+    private String botRengi = "siyah";
+    private final Random random = new Random();
 
     /**
      * Creates new form game
@@ -182,7 +186,7 @@ public class game extends javax.swing.JFrame {
                     handleIncomingMove(msg);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                SwingUtilities.invokeLater(() -> rakipAyrildiBotuBaslat());
             }
         }, "chess-client-listener").start();
     }
@@ -891,6 +895,7 @@ public class game extends javax.swing.JFrame {
         }
         secilenTas = null;
         baslangicDurumu();
+        botHamlesiniGerekirseBaslat();
 
     }
 
@@ -969,6 +974,130 @@ public class game extends javax.swing.JFrame {
             new EndScreen(sonuc).setVisible(true);
             dispose();
         });
+    }
+
+    private void rakipAyrildiBotuBaslat() {
+        if (oyunBitti || botMode) {
+            return;
+        }
+
+        onlineMode = false;
+        botMode = true;
+        botRengi = GameLogic.opposite(oyuncuRengi);
+        secilenTas = null;
+        JOptionPane.showMessageDialog(this, "Rakip oyundan ayrıldı. Bilgisayar devralıyor.");
+        baslangicDurumu();
+        botHamlesiniGerekirseBaslat();
+    }
+
+    private void botHamlesiniGerekirseBaslat() {
+        if (!botMode || oyunBitti || !botunSirasiMi()) {
+            return;
+        }
+
+        setOyunKontrolleriAktif(false);
+        javax.swing.Timer timer = new javax.swing.Timer(700, e -> {
+            ((javax.swing.Timer) e.getSource()).stop();
+            botHamlesiYap();
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    private boolean botunSirasiMi() {
+        return (beyazSirasi && "beyaz".equals(botRengi))
+                || (!beyazSirasi && "siyah".equals(botRengi));
+    }
+
+    private void botHamlesiYap() {
+        if (oyunBitti || !botunSirasiMi()) {
+            baslangicDurumu();
+            return;
+        }
+
+        BotHamlesi hamle = enIyiBotHamlesiniBul();
+        if (hamle == null) {
+            oyununBitisDurumunuKontrolEt(GameLogic.opposite(botRengi));
+            return;
+        }
+
+        secilenTas = hamle.tasButton;
+        uygulaHamleyiTahtada(hamle.tasButton, hamle.hedefX, hamle.hedefY, false);
+        secilenTas = null;
+        baslangicDurumu();
+    }
+
+    private BotHamlesi enIyiBotHamlesiniBul() {
+        List<BotHamlesi> enIyiHamleler = new ArrayList<>();
+        int enIyiPuan = Integer.MIN_VALUE;
+
+        for (Map.Entry<JButton, Piece> entry : new ArrayList<>(pieceMap.entrySet())) {
+            JButton tasButton = entry.getKey();
+            Piece tas = entry.getValue();
+            if (tas == null || !botRengi.equals(tas.color)) {
+                continue;
+            }
+
+            for (int x = 0; x < 8; x++) {
+                for (int y = 0; y < 8; y++) {
+                    if (!logic.isLegalMove(tas, x, y)) {
+                        continue;
+                    }
+
+                    Piece hedef = logic.board[x][y];
+                    int puan = hedef == null ? 0 : tasDegeri(hedef);
+                    if (puan > enIyiPuan) {
+                        enIyiPuan = puan;
+                        enIyiHamleler.clear();
+                    }
+                    if (puan == enIyiPuan) {
+                        enIyiHamleler.add(new BotHamlesi(tasButton, x, y, puan));
+                    }
+                }
+            }
+        }
+
+        if (enIyiHamleler.isEmpty()) {
+            return null;
+        }
+
+        return enIyiHamleler.get(random.nextInt(enIyiHamleler.size()));
+    }
+
+    private int tasDegeri(Piece tas) {
+        if (tas == null) {
+            return 0;
+        }
+
+        switch (tas.type) {
+            case "vezir":
+                return 9;
+            case "kale":
+                return 5;
+            case "fil":
+            case "at":
+                return 3;
+            case "piyon":
+                return 1;
+            default:
+                return 0;
+        }
+    }
+
+    private static class BotHamlesi {
+
+        private final JButton tasButton;
+        private final int hedefX;
+        private final int hedefY;
+        @SuppressWarnings("unused")
+        private final int puan;
+
+        BotHamlesi(JButton tasButton, int hedefX, int hedefY, int puan) {
+            this.tasButton = tasButton;
+            this.hedefX = hedefX;
+            this.hedefY = hedefY;
+            this.puan = puan;
+        }
     }
 
     private String takimAdi(String renk) {
@@ -1197,7 +1326,12 @@ public class game extends javax.swing.JFrame {
             }
 
             if ("INFO".equals(parts[0]) && parts.length >= 2) {
-                SwingUtilities.invokeLater(() -> turn.setText(parts[1]));
+                SwingUtilities.invokeLater(() -> {
+                    turn.setText(parts[1]);
+                    if (parts[1].contains("Rakip oyundan ayrıldı")) {
+                        rakipAyrildiBotuBaslat();
+                    }
+                });
                 return;
             }
 

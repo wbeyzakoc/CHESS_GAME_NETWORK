@@ -5,6 +5,7 @@ com/mycompany/chess/client/enter.class
 com/mycompany/chess/client/Server.class
 com/mycompany/chess/client/EndScreen.class
 com/mycompany/chess/client/ready.class
+com/mycompany/chess/client/game$BotHamlesi.class
 com/mycompany/chess/client/Chess.class
 com/mycompany/chess/client/game$2.class
 com/mycompany/chess/client/Server$ClientSession.class

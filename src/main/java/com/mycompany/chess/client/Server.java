@@ -117,9 +117,10 @@ public class Server {
                     to.output.println(msg);
                 }
             } catch (Exception ignored) {
-                closeQuietly(to.socket);
             } finally {
+                to.output.println("INFO,Rakip oyundan ayrıldı. Bilgisayar devralıyor.");
                 closeQuietly(from.socket);
+                closeQuietly(to.socket);
                 synchronized (ROOMS) {
                     room.remove(from);
                     room.remove(to);
