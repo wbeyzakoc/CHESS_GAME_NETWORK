@@ -20,7 +20,8 @@ public class ClientConnection {
     private PrintWriter out;
 
     public ClientConnection(String host, int port) throws Exception {
-        socket = new Socket(host, port);
+        socket = new Socket();
+        socket.connect(new InetSocketAddress(host, port), 3000);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
     }

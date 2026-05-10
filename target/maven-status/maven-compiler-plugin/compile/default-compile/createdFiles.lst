@@ -7,6 +7,7 @@ com/mycompany/chess/client/EndScreen.class
 com/mycompany/chess/client/ready.class
 com/mycompany/chess/client/Chess.class
 com/mycompany/chess/client/game$2.class
+com/mycompany/chess/client/Server$ClientSession.class
 com/mycompany/chess/client/GameLogic.class
 com/mycompany/chess/client/ready$1.class
 com/mycompany/chess/client/game$5.class
@@ -17,3 +18,4 @@ com/mycompany/chess/client/enter$1.class
 com/mycompany/chess/client/game$6.class
 com/mycompany/chess/client/Piece.class
 com/mycompany/chess/client/game$3.class
+com/mycompany/chess/client/Server$Room.class

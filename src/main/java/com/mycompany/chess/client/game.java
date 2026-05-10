@@ -41,28 +41,24 @@ public class game extends javax.swing.JFrame {
     private String oyuncuRengi = "beyaz";
     private String serverHost = "127.0.0.1";
     private int serverPort = 5003;
+    private String roomCode = "default";
 
     /**
      * Creates new form game
      */
     public game() {
-        this("127.0.0.1", 5003);
+        this("127.0.0.1", 5003, "default");
     }
 
     public game(String serverHost, int serverPort) {
+        this(serverHost, serverPort, "default");
+    }
+
+    public game(String serverHost, int serverPort, String roomCode) {
         this.serverHost = serverHost;
         this.serverPort = serverPort;
+        this.roomCode = roomCode == null || roomCode.trim().isEmpty() ? "default" : roomCode.trim();
         initComponents();
-
-        try {
-            conn = baglanSunucuya();
-            onlineMode = true;
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                    "Server bağlantısı başarısız!\n"
-                    + "Önce Server.java çalışıyor olmalı.\n"
-                    + "Denenen adresler: " + serverHost + ":5003, " + serverHost + ":5002 ve " + serverHost + ":5001");
-        }
 
         yukleGorseller();
 
@@ -98,9 +94,6 @@ public class game extends javax.swing.JFrame {
         baslangicDurumu();
         tasSecim();
         kareSecim();
-        if (onlineMode && conn != null) {
-            dinlemeyiBaslat();
-        }
 
         for (Component c : jPanel1.getComponents()) {
             if (c instanceof JButton) {
@@ -120,6 +113,46 @@ public class game extends javax.swing.JFrame {
 
         }
 
+        baglantiyiArkaPlandaBaslat();
+
+    }
+
+    private void baglantiyiArkaPlandaBaslat() {
+        turn.setText("CONNECTING...");
+        setOyunKontrolleriAktif(false);
+
+        new Thread(() -> {
+            try {
+                ClientConnection connection = baglanSunucuya();
+                connection.send("JOIN," + roomCode);
+                SwingUtilities.invokeLater(() -> {
+                    conn = connection;
+                    onlineMode = true;
+                    baslangicDurumu();
+                    dinlemeyiBaslat();
+                    JOptionPane.showMessageDialog(this,
+                            "Server bağlantısı başarılı: " + serverHost + ":" + serverPort);
+                });
+            } catch (Exception e) {
+                SwingUtilities.invokeLater(() -> {
+                    onlineMode = false;
+                    baslangicDurumu();
+                    JOptionPane.showMessageDialog(this,
+                            "Server bağlantısı başarısız!\n"
+                            + "Önce AWS üzerinde Server.java çalışıyor olmalı.\n"
+                            + "Denenen adresler: " + serverHost + ":" + serverPort + ", " + serverHost + ":5002 ve " + serverHost + ":5001");
+                });
+            }
+        }, "chess-connect").start();
+    }
+
+    private void setOyunKontrolleriAktif(boolean aktif) {
+        for (JButton t : taslar) {
+            t.setEnabled(aktif);
+        }
+        for (JButton k : kareler) {
+            k.setEnabled(false);
+        }
     }
 
     private ClientConnection baglanSunucuya() throws Exception {

@@ -87,11 +87,14 @@ public class ready extends javax.swing.JFrame   {
      
             JTextField hostField = new JTextField("127.0.0.1");
             JTextField portField = new JTextField("5003");
+            JTextField roomField = new JTextField("otomatik");
             JPanel panel = new JPanel(new java.awt.GridLayout(0, 1, 4, 4));
             panel.add(new JLabel("Server IP address"));
             panel.add(hostField);
             panel.add(new JLabel("Server port"));
             panel.add(portField);
+            panel.add(new JLabel("Room code"));
+            panel.add(roomField);
 
             int result = JOptionPane.showConfirmDialog(
                     this,
@@ -112,7 +115,11 @@ public class ready extends javax.swing.JFrame   {
 
             try {
                 int selectedPort = Integer.parseInt(portField.getText().trim());
-                new game(selectedHost, selectedPort).setVisible(true);
+                String selectedRoom = roomField.getText().trim();
+                if (selectedRoom.isEmpty()) {
+                    selectedRoom = "default";
+                }
+                new game(selectedHost, selectedPort, selectedRoom).setVisible(true);
                 this.dispose();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Port sayı olmalı. Örnek: 5003");
